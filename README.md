@@ -383,6 +383,6 @@ docker-compose up -d
 
 6. Once Prometheus and Grafana containers are up, and your Fabric network is running, you can access Grafana at localhost:3000. Use the following login credentials: Username: admin, Password: admin.
 - Add Prometheus Data Source: Configure Grafana to connect to Prometheus by specifying the Prometheus server URL, which should be http://prometheus:9090 in your case, and use the GET HTTP method.
-- Import a Dashboard: Grafana offers an existing dashboard for Hyperledger Fabric, which you can import from a JSON file. You can find the pre-built dashboard at Grafana's dashboard repository.
+- Import a Dashboard: Grafana offers an existing dashboard for Hyperledger Fabric, which you can import from a JSON file. You can find the pre-built dashboard at Grafana's dashboard repository: https://grafana.com/grafana/dashboards/10716-hyperledger-fabric/
 
 With Prometheus and Grafana set up, you can closely monitor your Hyperledger Fabric network, gain insights, and create customized dashboards to visualize and understand your blockchain's performance and health.
