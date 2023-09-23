@@ -1,0 +1,82 @@
+{
+	"name": "test-network",
+	"version": "1.0.0",
+	"client": {
+		"tlsEnable": true,
+		"adminCredential": {
+			"id": "exploreradmin",
+			"password": "exploreradminpw"
+		},
+		"enableAuthentication": true,
+		"organization": "aapp",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "100000"
+				},
+				"orderer": "100000"
+			}
+		}
+	},
+	"channels": {
+		"canal-venta-inmueble": {
+			"peers": {
+				"peer0.aapp.com": {},
+				"peer0.constructoras.com": {},
+				"peer0.particulares.com": {}
+			}
+		}
+	},
+	"organizations": {
+		"aapp": {
+			"mspid": "aapp",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/aapp.com/users/Admin@aapp.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.aapp.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/aapp.com/users/Admin@aapp.com/msp/signcerts/Admin@aapp.com-cert.pem"
+			}
+		},
+		"constructoras": {
+			"mspid": "constructoras",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/constructoras.com/users/Admin@constructoras.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.constructoras.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/constructoras.com/users/Admin@constructoras.com/msp/signcerts/Admin@constructoras.com-cert.pem"
+			}
+		},
+		"particulares": {
+			"mspid": "particulares",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/particulares.com/users/Admin@particulares.com/msp/keystore/priv_sk"
+			},
+			"peers": ["peer0.particulares.com"],
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/particulares.com/users/Admin@particulares.com/msp/signcerts/Admin@particulares.com-cert.pem"
+			}
+		}
+	},
+	"peers": {
+		"peer0.aapp.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/aapp.com/peers/peer0.aapp.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.aapp.com:10051"
+		},
+		"peer0.constructoras.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/constructoras.com/peers/peer0.constructoras.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.constructoras.com:7051"
+		},
+		"peer0.particulares.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/particulares.com/peers/peer0.particulares.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.particulares.com:9051"
+		}
+	}
+}
