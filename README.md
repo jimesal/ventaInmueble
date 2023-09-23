@@ -1,4 +1,4 @@
-# How to deploy and interact with ventaInmueble network
+# How to deploy and interact with ventaInmueble Hyperledger Fabric network
 
 This guide provides step-by-step instructions for deploying and interacting with the ventaInmueble network in Hyperledger Fabric using the files provided in this repository. The ventaInmueble network simulates a regulated real estate market involving public administrations ("AAPP"), construction companies ("constructoras"), and consumers ("particulares"), each represented by a single peer. These organizations approve transactions related to property registration, sale, and purchase, helping public organizations regulate the market and promote transparency.
 
@@ -32,7 +32,9 @@ Clone the hyperledger/fabric-samples repository to access the binaries and scrip
 ```
 curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.3.3 1.5.2
 ```
+
 ### Cleaning up
+
 To ensure a clean start, remove existing containers, volumes, and networks:
 
 ```
@@ -81,7 +83,7 @@ cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml
 Deploy the network with its participants. In the docker-compose.yaml file, the elements and configuration of the network is defined. These are the participants: three peer nodes and one orderer node. Assigned to them there are three volumes. In addition, there is a Hyperledger Fabric CLI container. Also, the tree peer nodes will use a CouchDB database. Alltogether, they will interact in a network called "fabirc_test". The containers use images provided by the Hyperledger Fabric project. Other configurations like the port mapping or protocol definition can be seen and updated in this file.
 
 ```
-docker-compose -f docker/docker-compose-red.yaml up -d
+docker-compose -f net/docker-compose-red.yaml up -d
 ```
 
 ### Setting up the channel
@@ -261,10 +263,16 @@ export CORE_PEER_ADDRESS=localhost:10051
 peer lifecycle chaincode install venta-inmueble-chaincode.tar.gz
 ```
 
-Approve the chaincode for the three organizations now that the chaincode has already been istalled in their respective peers. Wit this command we will also define the Endorsement Policy. As we aim to approve the channel queries by all three organizations strictly, we will use the default policy (it is not explicitly seen in this command), where the three organizations have to endorse the transactions: AND('aapp.member','constructoras.member', 'particulares.member')
+Export the CC_PACKAGE_ID variable according with the id of the package you have installed:
 
 ```
+peer lifecycle chaincode queryinstalled
 export CC_PACKAGE_ID=test_1.0:18fd0969000fc5d85e2cb3726ad12a6eb3ecebb690dfaacb0f42cb58b1597657
+```
+
+Approve the chaincode for the three organizations now that the chaincode has already been istalled in their respective peers. With this command we will also define the Endorsement Policy. As we aim to approve the channel queries by all three organizations strictly, we will use the default policy (it is not explicitly seen in this command), where the three organizations have to endorse the transactions: AND('aapp.member','constructoras.member', 'particulares.member')
+
+```
 peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.venta-inmueble.com --channelID canal-venta-inmueble --name test --version 1.0 --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile ${PWD}/organizations/ordererOrganizations/venta-inmueble.com/orderers/orderer.venta-inmueble.com/msp/tlscacerts/tlsca.venta-inmueble.com-cert.pem
 
 export CORE_PEER_LOCALMSPID="constructoras"
@@ -316,7 +324,7 @@ peer chaincode query -C canal-venta-inmueble -n test -c '{"Args":["GetTodosInmue
 Now, register a new property. After that, the property will be sold from the "constructoras" to a first-hand buyer ("particular"). Finally, the owner of the property will sell it again to a second-hand buyer (also "particular"). Note that the owner and prices change, and this information will be registered in the network:
 
 ```
-peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.venta-inmueble.com --tls --cafile ${PWD}/organizations/ordererOrganizations/venta-inmueble.com/orderers/orderer.venta-inmueble.com/msp/tlscacerts/tlsca.venta-inmueble.com-cert.pem -C canal-venta-inmueble -n test --peerAddresses localhost:7051 --peerAddresses localhost:9051 --peerAddresses localhost:10051 --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/constructoras.com/peers/peer0.constructoras.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/particulares.com/peers/peer0.particulares.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/aapp.com/peers/peer0.aapp.com/tls/ca.crt -c '{"function":"RegistrarInmueble","Args":["I00006", "c/ Martes 13, 2B, 22090, Oviedo, Espana", "C00006", "60000D"]}'
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.venta-inmueble.com --tls --cafile ${PWD}/organizations/ordererOrganizations/venta-inmueble.com/orderers/orderer.venta-inmueble.com/msp/tlscacerts/tlsca.venta-inmueble.com-cert.pem -C canal-venta-inmueble -n test --peerAddresses localhost:7051 --peerAddresses localhost:9051 --peerAddresses localhost:10051 --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/constructoras.com/peers/peer0.constructoras.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/particulares.com/peers/peer0.particulares.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/aapp.com/peers/peer0.aapp.com/tls/ca.crt -c '{"function":"RegistrarInmueble","Args":["I00006", "c/ Martes 13, 2B, 22090, Oviedo, Espana", "C00006"]}'
 
 peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.venta-inmueble.com --tls --cafile ${PWD}/organizations/ordererOrganizations/venta-inmueble.com/orderers/orderer.venta-inmueble.com/msp/tlscacerts/tlsca.venta-inmueble.com-cert.pem -C canal-venta-inmueble -n test --peerAddresses localhost:7051 --peerAddresses localhost:9051 --peerAddresses localhost:10051 --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/constructoras.com/peers/peer0.constructoras.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/particulares.com/peers/peer0.particulares.com/tls/ca.crt --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/aapp.com/peers/peer0.aapp.com/tls/ca.crt -c '{"function":"VenderInmueble","Args":["I00006", "C00007", "312000"]}'
 
@@ -332,6 +340,7 @@ In this section, we'll explore two essential tools for visualizing and monitorin
 Hyperledger Explorer offers a user-friendly interface designed to facilitate interaction with and monitoring of Hyperledger Fabric networks. It simplifies the tasks of exploring, querying, and visualizing blockchain data, providing valuable insights into your network.
 
 To get started, follow these steps to set up Hyperledger Explorer. Create a dedicated folder for your Hyperledger Explorer configuration. Next, download three essential files from the official repository:
+
 - docker-compose.yaml: This file orchestrates the deployment of containers for the Explorer service and its associated database.
 - test-network.json (found inside a "connection-profile" folder): This file defines the configuration necessary to access the Hyperledger Fabric network from a specific participant.
 - config.json: This configuration file will be used to customize Hyperledger Explorer's behavior.
@@ -345,11 +354,14 @@ wget https://raw.githubusercontent.com/hyperledger/blockchain-explorer/main/exam
 wget https://raw.githubusercontent.com/hyperledger/blockchain-explorer/main/examples/net1/connection-profile/test-network.json -P connection-profile
 wget https://raw.githubusercontent.com/hyperledger/blockchain-explorer/main/docker-compose.yaml
 ```
+
 Please note that you need to update the test-network.json file with the correct values for the client, channels, organizations, and peers objects. The configuration in this file depends on the client connecting to the service. In the provided file, all organizations and peers are included, but the client is set to be the "aapp" organization. Therefore, including this organization and its peer in the JSON file is sufficient to deploy Explorer.
 
 In the docker-compose.yaml file, make the following adjustments:
+
 - Replace the network name with the appropriate name that matches your deployed Hyperledger Fabric network.
 - Update the volume paths to correspond to the actual paths where the necessary files should be located:
+
 ```
     volumes:
       - ./config.json:/opt/explorer/app/platform/fabric/config.json
@@ -357,11 +369,13 @@ In the docker-compose.yaml file, make the following adjustments:
       - ./../organizations:/tmp/crypto
       - walletstore:/opt/explorer/wallet
 ```
+
 With these configurations in place, you can deploy the containers:
 
 ```
 docker-compose up -d
 ```
+
 As specified in the configuration, you can access the Hyperledger Explorer service on port 8080 of your machine. Use the provided credentials found in the test-network.json file (username: "exploreradmin" and password: "exploreradmin") to log in.
 
 This setup allows you to efficiently visualize and explore your Hyperledger Fabric network using the Hyperledger Explorer tool.
@@ -373,15 +387,18 @@ Prometheus is an open-source monitoring and alerting toolkit designed to efficie
 1. Create a Monitoring Folder: Begin by creating a dedicated folder to manage monitoring configurations.
 2. Configure Prometheus: Generate a prometheus.yaml file to define the jobs responsible for targeting the nodes in your Hyperledger Fabric network. Ensure that Prometheus listens on the ports specified in your Hyperledger Fabric network's configuration (found in the Fabric network docker-compose.yaml file) under the environment variables CORE_OPERATIONS_LISTENADDRESS and ORDERER_OPERATIONS_LISTENADDRESS for peers and orderers, respectively.
 3. Deploy Prometheus and Grafana: In the docker-compose.yml file, specify the services you need:
-    - The Prometheus service links to the volume specified in the prometheus.yaml file.
-    - The Grafana service is deployed and accessible at localhost:3000.
+   - The Prometheus service links to the volume specified in the prometheus.yaml file.
+   - The Grafana service is deployed and accessible at localhost:3000.
 4. Start the containers:
+
 ```
 docker-compose up -d
 ```
+
 5. Verifying metrics. To ensure that Prometheus is successfully fetching metrics from each node, you can visit localhost:9090/targets. To view the raw data, navigate to each node's respective port defined in your local machine. Keep in mind that the endpoints managed by Prometheus correspond to your network and not your local machine. For example, metrics available at http://peer0.aapp.com:12051/metrics in the Hyperledger Fabric network can be fetched locally at localhost:12051/metrics in your browser.
 
 6. Once Prometheus and Grafana containers are up, and your Fabric network is running, you can access Grafana at localhost:3000. Use the following login credentials: Username: admin, Password: admin.
+
 - Add Prometheus Data Source: Configure Grafana to connect to Prometheus by specifying the Prometheus server URL, which should be http://prometheus:9090 in your case, and use the GET HTTP method.
 - Import a Dashboard: Grafana offers an existing dashboard for Hyperledger Fabric, which you can import from a JSON file. You can find the pre-built dashboard at Grafana's dashboard repository: https://grafana.com/grafana/dashboards/10716-hyperledger-fabric/
 
