@@ -2,6 +2,8 @@
 
 This guide provides step-by-step instructions for deploying and interacting with the ventaInmueble network in Hyperledger Fabric using the files provided in this repository. The ventaInmueble network simulates a regulated real estate market involving public administrations ("AAPP"), construction companies ("constructoras"), and consumers ("particulares"), each represented by a single peer. These organizations approve transactions related to property registration, sale, and purchase, helping public organizations regulate the market and promote transparency.
 
+![Architecture](assets/images/Arquitectura.png)
+
 ## Deployment
 
 This project was developed with the following software:
