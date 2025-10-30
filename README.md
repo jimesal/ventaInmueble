@@ -1,4 +1,5 @@
 # How to deploy and interact with ventaInmueble Hyperledger Fabric network
+**Project completed on September 2023**
 
 This guide provides step-by-step instructions for deploying and interacting with the ventaInmueble network in Hyperledger Fabric using the files provided in this repository. The ventaInmueble network simulates a regulated real estate market involving public administrations ("AAPP"), construction companies ("constructoras"), and consumers ("particulares"), each represented by a single peer. These organizations approve transactions related to property registration, sale, and purchase, helping public organizations regulate the market and promote transparency.
 
@@ -13,6 +14,14 @@ This project was developed with the following software:
 - Docker Compose 1.29.2
 - Node.js v12.22.9
 - Hyperledger Fabric 2.3.3
+
+## Disclaimer
+
+This project was developed for academic purposes only.  
+It is not intended for production use, and no guarantees are made regarding its security, performance, or functionality.  
+Note: The administrator’s private keys** are visible in `session.service.ts`, and should never be used in a real blockchain environment.
+
+---
 
 ### Necessary extensions
 
